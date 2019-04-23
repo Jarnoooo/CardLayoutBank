@@ -1,4 +1,4 @@
-package javaapplication33;
+package cardlayout;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -6,12 +6,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 
-public class JavaApplication33 {
+public class CardLayout {
 
+//int geldOpnemen = 0; 
     public static void main(String[] args) {
-        
-              
-        final int psaldo = 0;
         final String SaldoPersoon = "42";
 
         final String card1Text = "Card 1";
@@ -31,7 +29,6 @@ public class JavaApplication33 {
         final String bon = "Bon";
         final String Sald = "Saldo";
 
-        /*!!!!!!!!!!!!!!!!!!!!!!BUTTONS!!!!!!!!!!!!!!!*/
         JButton a = new JButton("Welkom bij KU Bank \n klik hier om verder te gaan");
         JButton info = new JButton("Kies hier wat u wil gaan doen...");
         JButton op = new JButton("Opnemen");
@@ -59,14 +56,12 @@ public class JavaApplication33 {
         JPanel bonn = new JPanel();
         JPanel saldooo = new JPanel();
 
-        /*!!!!!!!!!!!!!!Buttons toevoegen!!!!!!!!!!!!!!!!!*/
         card1.add(a);
 
         infoo.add(info);
-//        infoo.add(st);
+
         infoo.add(op);
         infoo.add(sne);
-        infoo.add(saldocheck);
 
         opnemen.add(opn);
         opnemen.add(opne);
@@ -81,7 +76,9 @@ public class JavaApplication33 {
         saldooo.add(saldoP);
         saldooo.add(saldoo);
 
-        /*!!!!!!!!!!!!!!Cards!!!!!!!!!!!!!!*/
+        card1.setBackground(new Color(255, 0, 0));
+
+        /*!!!!!!!!!!!!!!!!!!Create the panel that contains the "cards"!!!!!!!!!!!!*/
         cards = new JPanel(new java.awt.CardLayout());
 
         cards.add(card1, card1Text);
@@ -89,10 +86,10 @@ public class JavaApplication33 {
         cards.add(opnemen, card3Text);
         cards.add(SnelMenuu, card4Text);
         cards.add(bonn, card5Text);
-        cards.add(saldoo, card6Text);
+        cards.add(saldooo, card6Text);
+
         java.awt.CardLayout cl = (java.awt.CardLayout) (cards.getLayout());
 
-        /*!!!!!!!!!!!!!!ActionListeners!!!!!!!!!!*/
         a.addActionListener(new ActionListener() {
 
             @Override
@@ -101,43 +98,48 @@ public class JavaApplication33 {
             }
         });
         op.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+
+            public void actionPerformed(ActionEvent a) {
                 cl.next(cards);
                 cl.next(cards);
-            }
-        });
-        sne.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cl.next(cards);
-                cl.next(cards);
-            }
-        });
-        saldocheck.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cl.next(cards);
-                cl.next(cards);
-                cl.next(cards);
-                cl.next(cards);
-                // if functie om te bepalen of er genoeg geld op de bank staat
+
             }
         });
         opn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+
+            public void actionPerformed(ActionEvent a) {
+                cl.next(cards);
+                cl.next(cards);
                 cl.next(cards);
                 
-                    
-                try {
-//                    cl.next(cards);
-                    Thread.sleep(3000);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                System.out.println("Na de try");
-                //cl.first(cards);
+                int geldOpnemen = 20;
+                System.out.println(geldOpnemen);
             }
-});
-         ComponentListener s = new ComponentListener() {
+        });
 
+        opne.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent a) {
+                cl.next(cards);
+                cl.next(cards);
+                cl.next(cards);
+
+                int geldOpnemen = 50;
+                System.out.println(geldOpnemen);
+            }
+        });
+        opnee.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent a) {
+                cl.next(cards);
+                cl.next(cards);
+                cl.next(cards);
+                
+                int geldOpnemen = 100;
+                System.out.println(geldOpnemen);
+            }
+        });
+        bonn.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
             }
@@ -148,40 +150,42 @@ public class JavaApplication33 {
 
             @Override
             public void componentShown(ComponentEvent e) {
-                
+                try {
+                    Thread.sleep(3000);
+//                    cl.next(cards);// om naar eerste scherm tegaan eventueel nog extra line toevoegen
+//                    cl.next(cards);
+                    // close connection 
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+
             }
 
             @Override
             public void componentHidden(ComponentEvent e) {
+
             }
-        };
- 
-        opnee.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                cl.next(cards);
-            }
+
         });
 
         JFrame frame = new JFrame("Bank");
+
         class ControlActionListener implements ActionListener {
 
-    public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
 
-        String cmd = e.getActionCommand();
+                String cmd = e.getActionCommand();
 
-        if (cmd.equals(Exit)) {
-            cl.first(cards);
-        } else if (cmd.equals(SnelMenu)) {
-//                    cl.next(cards);
+                if (cmd.equals(Exit)) {
+                    cl.first(cards);
+                } else if (cmd.equals(SnelMenu)) {
+                    cl.next(cards);
+                    cl.next(cards);
 
-//            } else if (cmd.equals(LAST)) {
-//                cl.last(cards);
-//            }
+                }
+            }
         }
-    }
-}
-/*!!!!!!!!!!!!!FRAME!!!!!!!!!!!!*/
-ControlActionListener cal = new ControlActionListener();
+        ControlActionListener cal = new ControlActionListener();
 
         JButton btn1 = new JButton("Exit");
         btn1.setActionCommand(Exit);
