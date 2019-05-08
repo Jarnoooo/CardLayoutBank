@@ -10,9 +10,19 @@ public class CardLayout {
 
 //int geldOpnemen = 0; 
     public static void main(String[] args) {
-        final String SaldoPersoon = "42";
-
-        final String card1Text = "Card 1";
+        AccountsConnection acc = new AccountsConnection("jdbc:mysql://localhost:8306/mybank?useLegacyDatetimeCode=false&serverTimezone=Europe/Amsterdam", "bank", "hunter2");
+        
+        int saldoDatabase;
+        int geldOpnemen;
+        String SaldoPersoon;
+        String user = "1";
+        String ownerId ;
+        acc.queryDatabase("SELECT * FROM accounts WHERE accountid ="+user);
+        
+        saldoDatabase = acc.getCredit();
+        ownerId = acc.getOwnerId();
+        
+    final String card1Text = "Card 1";
         final String card2Text = "Card 2";
         final String card3Text = "Card 3";
         final String card4Text = "Card 4";
@@ -44,7 +54,7 @@ public class CardLayout {
         JButton opne = new JButton("£50");
         JButton opnee = new JButton("£100");
 
-        JButton saldoP = new JButton("Uw saldo bij ons = "+SaldoPersoon);
+        JButton saldoP = new JButton("Uw saldo bij ons = "+saldoDatabase);
 
         JButton opge = new JButton("U kunt uw geld uit de automaat nemen!");
         /*!!!!!!!!!!!!!!!!PANELS!!!!!!!!!!!!!*/
@@ -111,6 +121,7 @@ public class CardLayout {
                 cl.next(cards);
 //             
                 int geldOpnemen = 20;
+                acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0,"+geldOpnemen+");");
                 System.out.println(geldOpnemen);
             }
         });
