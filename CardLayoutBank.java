@@ -30,6 +30,9 @@ public class CardLayoutBank {
         final String card4Text = "Card 4";
         final String card5Text = "Card 5";
         final String card6Text = "Card 6";
+        final String card7Text = "Card 7";
+        final String card8Text = "Card 8";
+        
         final String cardBon = "cardBox";
         final String saldo = "Saldo";
         final String geblokkeerd = "Geblokkeerd";
@@ -49,7 +52,7 @@ public class CardLayoutBank {
         JButton sne = new JButton("Snelmenu");
         JButton saldocheck = new JButton("Saldo Check");
 
-        JButton bo = new JButton("Bon printen");
+        
 
 //        JButton saldoo = new JButton("Dus te weinig saldo");
         JButton opn = new JButton("£20");
@@ -59,6 +62,12 @@ public class CardLayoutBank {
         JButton saldoP = new JButton("Uw saldo bij ons = " + saldoDatabase);
 
         JButton opge = new JButton("U kunt uw geld uit de automaat nemen!");
+        
+        JButton bonnetje = new JButton("Wilt u een bonnetje?");
+        JButton ja = new JButton("Ja");
+        JButton nee = new JButton("Nee");
+        
+        JButton bo = new JButton("Bon printen");
 
         JButton geblokt = new JButton("Uw pas is geblokt");
         /*!!!!!!!!!!!!!!!!PANELS!!!!!!!!!!!!!*/
@@ -67,8 +76,10 @@ public class CardLayoutBank {
         JPanel infoo = new JPanel();
         JPanel opnemen = new JPanel();
         JPanel SnelMenuu = new JPanel();
-        JPanel bonn = new JPanel();
+        JPanel automaat = new JPanel();
         JPanel saldooo = new JPanel();
+        JPanel vraag = new JPanel();
+        JPanel bonPrinten = new JPanel();
         JPanel pasBlok = new JPanel();
 
         card1.add(a);
@@ -86,7 +97,7 @@ public class CardLayoutBank {
         SnelMenuu.add(opne);
         SnelMenuu.add(opnee);
 
-        bonn.add(opge);
+        automaat.add(opge);
 
         saldooo.add(saldoP);
 
@@ -99,7 +110,7 @@ public class CardLayoutBank {
         cards.add(infoo, card2Text);
         cards.add(opnemen, card3Text);
         cards.add(SnelMenuu, card4Text);
-        cards.add(bonn, card5Text);
+        cards.add(automaat, card5Text);
         cards.add(saldooo, card6Text);
         cards.add(pasBlok, geblokkeerd);
 
@@ -133,6 +144,7 @@ public class CardLayoutBank {
                     int x = c.getCredit();
 //                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
                     acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
+                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
                     System.out.println(geldOpnemen);
                 }
             });
@@ -147,6 +159,7 @@ public class CardLayoutBank {
                     int x = c.getCredit();
 //                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
                     acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
+                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
                     System.out.println(geldOpnemen);
                 }
             });
@@ -160,6 +173,8 @@ public class CardLayoutBank {
                     int x = c.getCredit();
 //                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
                     acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
+                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
+                    
                     System.out.println(geldOpnemen);
                 }
             });
@@ -171,7 +186,7 @@ public class CardLayoutBank {
                     cl.next(cards);
                 }
             });
-            bonn.addComponentListener(new ComponentListener() {
+            automaat.addComponentListener(new ComponentListener() {
                 @Override
                 public void componentResized(ComponentEvent e) {
                 }
@@ -183,9 +198,9 @@ public class CardLayoutBank {
                 @Override
                 public void componentShown(ComponentEvent e) {
                     try {
-                        System.out.println(geldOpnemen);
-                        int credit = newCredit(acc, geldOpnemen);
-                        acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
+//                        System.out.println(geldOpnemen);
+//                        int credit = Credit(acc, geldOpnemen);
+//                        acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
 
                         Thread.sleep(3000);
                         cl.first(cards);
@@ -223,7 +238,7 @@ public class CardLayoutBank {
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     } finally {
-//                cl.next(cards);// om naar eerste scherm tegaan eventueel nog extra line toevoegen
+                        cl.next(cards);// om naar eerste scherm tegaan eventueel nog extra line toevoegen
                         cl.next(cards);
                         // close connection 
                     }

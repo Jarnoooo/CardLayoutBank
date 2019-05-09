@@ -12,8 +12,8 @@ import java.time.format.DateTimeFormatter;
  *
  * @author jarno
  */
-public class printen {
-    public printen(){
+public class Printen {
+    public Printen(){
         DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE;
         String formattedDate = formatter.format(LocalDate.now());
         System.out.println("Datum: " +formattedDate);
