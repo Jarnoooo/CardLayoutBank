@@ -33,7 +33,7 @@ public class AccountsConnection {
 
     public AccountsConnection(String url, String user, String pass) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("com.mysql.jdbc.Driver");
             c = DriverManager.getConnection(url, user, pass);
         } catch (Exception ex) {
             ex.printStackTrace();
