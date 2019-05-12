@@ -110,7 +110,7 @@ public class AccountsConnection {
         return false;
     }
 
-    public int getCardnumber() {
+    public int getCardNumber(String x) {
         try {
             r.first();
             return r.getInt("cardnumber");
@@ -130,4 +130,5 @@ public class AccountsConnection {
         }
         return -1;
     }
+    
 }

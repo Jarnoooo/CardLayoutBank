@@ -1,13 +1,17 @@
 package cardlayout;
 
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
+import com.fazecast.jSerialComm.SerialPortEvent;
+import java.util.logging.Level;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 
 public class CardLayoutBank {
-
+static String serial;
+        
 //int geldOpnemen = 0; 
     public static void main(String[] args) {
         AccountsConnection acc = new AccountsConnection("jdbc:mysql://localhost:8306/mybank?useLegacyDatetimeCode=false&serverTimezone=Europe/Amsterdam", "bank", "hunter2");
@@ -18,11 +22,11 @@ public class CardLayoutBank {
         String SaldoPersoon;
         String user = "1";
         String ownerId;
-
+        
+        final boolean rfid = false;
         /* hier functie maken/aanroepen dat het alleen mag doorgaan als de pas active op 1 is*/
-        acc.queryDatabase("SELECT * FROM accounts WHERE accountid =" + user);
-        saldoDatabase = acc.getCredit();
-        ownerId = acc.getOwnerId();
+        
+        
 
         final String card1Text = "Card 1";
         final String card2Text = "Card 2";
@@ -32,7 +36,7 @@ public class CardLayoutBank {
         final String card6Text = "Card 6";
         final String card7Text = "Card 7";
         final String card8Text = "Card 8";
-        
+
         final String cardBon = "cardBox";
         final String saldo = "Saldo";
         final String geblokkeerd = "Geblokkeerd";
@@ -45,14 +49,54 @@ public class CardLayoutBank {
         final String bon = "Bon";
         final String Sald = "Saldo";
 
-        JButton a = new JButton("Welkom bij KU Bank \n klik hier om verder te gaan");
+        /*
+		 * Change "COM4" to your USB port connected to the Arduino
+		 * You can find the right port using the ArduinIDE
+		 *
+		 * PS: Unix based operating systems use "/dev/ttyUSB"
+         */
+        SerialPort comPort = SerialPort.getCommPort("COM5");
+
+        //set the baud rate to 9600 (same as the Arduino)
+        comPort.setBaudRate(9600);
+
+        //open the port
+        comPort.openPort();
+
+        //create a listener and start listening
+        comPort.addDataListener(new SerialPortDataListener() {
+            @Override
+            public int getListeningEvents() {
+                return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+            }
+
+            @Override
+            public void serialEvent(SerialPortEvent event) {
+                if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
+                    return; //wait until we receive data
+                }
+                byte[] newData = new byte[comPort.bytesAvailable()]; //receive incoming bytes
+                comPort.readBytes(newData, newData.length); //read incoming bytes
+                String serialData = new String(newData); //convert bytes to string
+//                setArduino(serialData);
+                //print string received from the Arduino
+                setArduino(serialData);
+                System.out.println(serialData);
+             
+            }
+        });
+        
+        saldoDatabase = acc.getCredit();
+        ownerId = acc.getOwnerId();
+        
+//        acc.queryDatabase("SELECT * FROM accounts WHERE accountid =" + user);
+//        
+        JButton a = new JButton("Welkom bij KU Bank \n Scan uw pas om verder te gaan, en klik op A");
         JButton info = new JButton("Kies hier wat u wil gaan doen...");
         JButton op = new JButton("Opnemen");
         // JButton st = new JButton("Storten");
         JButton sne = new JButton("Snelmenu");
         JButton saldocheck = new JButton("Saldo Check");
-
-        
 
 //        JButton saldoo = new JButton("Dus te weinig saldo");
         JButton opn = new JButton("£20");
@@ -62,11 +106,11 @@ public class CardLayoutBank {
         JButton saldoP = new JButton("Uw saldo bij ons = " + saldoDatabase);
 
         JButton opge = new JButton("U kunt uw geld uit de automaat nemen!");
-        
+
         JButton bonnetje = new JButton("Wilt u een bonnetje?");
         JButton ja = new JButton("Ja");
         JButton nee = new JButton("Nee");
-        
+
         JButton bo = new JButton("Bon printen");
 
         JButton geblokt = new JButton("Uw pas is geblokt");
@@ -118,7 +162,10 @@ public class CardLayoutBank {
 
         if (!acc.getActive()) {
 
-        } else {
+        }
+        if(serial == "a"){
+            
+        }else {
             a.addActionListener(new ActionListener() {
 
                 @Override
@@ -174,7 +221,7 @@ public class CardLayoutBank {
 //                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
                     acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
                     acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
-                    
+
                     System.out.println(geldOpnemen);
                 }
             });
@@ -297,10 +344,11 @@ public class CardLayoutBank {
 //        return y;
 //    }
 //    
-//    public int getOpnemen(){
-//        return geldOpnemen;
-//    }
-//    public void setOpnemen(int x){
-//       geldOpnemen = x; 
-//    }
+    public String getArduino(){
+        return serial;
+    }
+    public static void setArduino(String x){
+        serial = x; 
+        System.out.print("JOEJKEO"+serial);
+    }
 }
