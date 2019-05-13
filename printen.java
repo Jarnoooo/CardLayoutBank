@@ -13,10 +13,10 @@ import java.time.format.DateTimeFormatter;
  * @author jarno
  */
 public class Printen {
-    public Printen(){
+    public Printen(int x){
         DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE;
         String formattedDate = formatter.format(LocalDate.now());
         System.out.println("Datum: " +formattedDate);
-        System.out.println("da");
+        System.out.println("Geldopgenomen = "+x);
     }
 }

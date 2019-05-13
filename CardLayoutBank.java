@@ -10,8 +10,9 @@ import java.util.logging.Logger;
 import javax.swing.*;
 
 public class CardLayoutBank {
-static String serial;
-        
+
+    static String serial;
+    static int opnemen;
 //int geldOpnemen = 0; 
     public static void main(String[] args) {
         AccountsConnection acc = new AccountsConnection("jdbc:mysql://localhost:8306/mybank?useLegacyDatetimeCode=false&serverTimezone=Europe/Amsterdam", "bank", "hunter2");
@@ -19,14 +20,13 @@ static String serial;
         int credit;
         int saldoDatabase;
         int geldOpnemen;
+       
         String SaldoPersoon;
         String user = "1";
         String ownerId;
-        
+        String x;
         final boolean rfid = false;
         /* hier functie maken/aanroepen dat het alleen mag doorgaan als de pas active op 1 is*/
-        
-        
 
         final String card1Text = "Card 1";
         final String card2Text = "Card 2";
@@ -82,21 +82,19 @@ static String serial;
                 //print string received from the Arduino
                 setArduino(serialData);
                 System.out.println(serialData);
-             
+
             }
         });
-        
+
+        acc.queryDatabase("SELECT * FROM accounts WHERE accountid =" + user);
         saldoDatabase = acc.getCredit();
         ownerId = acc.getOwnerId();
-        
-//        acc.queryDatabase("SELECT * FROM accounts WHERE accountid =" + user);
-//        
-        JButton a = new JButton("Welkom bij KU Bank \n Scan uw pas om verder te gaan, en klik op A");
+        JButton a = new JButton("Welkom bij KU Bank" + "\n" + "Scan uw pas om verder te gaan en voer uw pincode in");
         JButton info = new JButton("Kies hier wat u wil gaan doen...");
-        JButton op = new JButton("Opnemen");
+        JButton op = new JButton("(A) Opnemen");
         // JButton st = new JButton("Storten");
-        JButton sne = new JButton("Snelmenu");
-        JButton saldocheck = new JButton("Saldo Check");
+        JButton sne = new JButton("(*) Snelmenu");
+        JButton saldocheck = new JButton("(B) Saldo Check");
 
 //        JButton saldoo = new JButton("Dus te weinig saldo");
         JButton opn = new JButton("£20");
@@ -104,12 +102,11 @@ static String serial;
         JButton opnee = new JButton("£100");
 
         JButton saldoP = new JButton("Uw saldo bij ons = " + saldoDatabase);
-
         JButton opge = new JButton("U kunt uw geld uit de automaat nemen!");
 
         JButton bonnetje = new JButton("Wilt u een bonnetje?");
-        JButton ja = new JButton("Ja");
-        JButton nee = new JButton("Nee");
+        JButton ja = new JButton("(A) Ja");
+        JButton nee = new JButton("(B) Nee");
 
         JButton bo = new JButton("Bon printen");
 
@@ -142,9 +139,12 @@ static String serial;
         SnelMenuu.add(opnee);
 
         automaat.add(opge);
-
+        
+        bonPrinten.add(bonnetje);
+        bonPrinten.add(ja);
+        bonPrinten.add(nee);
+        
         saldooo.add(saldoP);
-
         card1.setBackground(new Color(255, 0, 0));
 
         /*!!!!!!!!!!!!!!!!!!Create the panel that contains the "cards"!!!!!!!!!!!!*/
@@ -155,200 +155,249 @@ static String serial;
         cards.add(opnemen, card3Text);
         cards.add(SnelMenuu, card4Text);
         cards.add(automaat, card5Text);
+        cards.add(bonPrinten, card7Text);
         cards.add(saldooo, card6Text);
         cards.add(pasBlok, geblokkeerd);
 
         java.awt.CardLayout cl = (java.awt.CardLayout) (cards.getLayout());
 
-        if (!acc.getActive()) {
+//        while(3< !serial.length()){
+//            Thread.yield();
+//        }
+//        if (!acc.getActive()) {
+//
+//        }
+//        try {
+//            if (serial.length() > 3) {
+//                acc.getCardNumber("SELECT accountid FROM cards WHERE rfidid =" + serial);
+////           System.out.println(acc.getCardNumber("SELECT accountid FROM cards WHERE rfidid =" + serial));
+//////                    rfid = true;
+////            acc.getActive();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Thread.yield();
+//        }
+//        else if (serial == "A") {
+//            cl.next(cards);
+//        } else {
+//        while(getArduino() == null){
+//        if (getArduino() == "AA"){
+//            System.out.println("da");
+//                    cl.next(cards);
+//                }
+//        }
+           
+        a.addActionListener(new ActionListener() {
 
-        }
-        if(serial == "a"){
-            
-        }else {
-            a.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                setId(acc.getCardNumber("SELECT accountid FROM cards WHERE rfidid =" + serial));
+                cl.next(cards);
+            }
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    cl.next(cards);
-                }
-            });
-            op.addActionListener(new ActionListener() {
+        });
 
-                public void actionPerformed(ActionEvent a) {
-                    cl.next(cards);
-                    cl.next(cards);
+        op.addActionListener(new ActionListener() {
 
-                }
-            });
-            opn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent a) {
 
-                public void actionPerformed(ActionEvent a) {
-                    cl.next(cards);
-//             
-                    int geldOpnemen = 20;
-                    c.setCredit(geldOpnemen);
-                    int x = c.getCredit();
+                cl.next(cards);
+                cl.next(cards);
+
+            }
+        });
+
+        opn.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent a) {
+                cl.next(cards);
+                cl.next(cards);
+                int geldOpnemen = 20;
+                c.setCredit(geldOpnemen);
+                int x = c.getCredit();
 //                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
-                    acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
-                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
-                    System.out.println(geldOpnemen);
-                }
-            });
+                acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
+                acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
+                System.out.println(geldOpnemen);
+            }
+        });
 
-            opne.addActionListener(new ActionListener() {
+        opne.addActionListener(new ActionListener() {
 
-                public void actionPerformed(ActionEvent a) {
-                    cl.next(cards);
+            public void actionPerformed(ActionEvent a) {
+                cl.next(cards);
 
-                    int geldOpnemen = 50;
-                    c.setCredit(geldOpnemen);
-                    int x = c.getCredit();
+                int geldOpnemen = 50;
+                c.setCredit(geldOpnemen);
+                int x = c.getCredit();
 //                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
-                    acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
-                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
-                    System.out.println(geldOpnemen);
-                }
-            });
-            opnee.addActionListener(new ActionListener() {
+                acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
+                acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
+                System.out.println(geldOpnemen);
+            }
+        });
+        opnee.addActionListener(new ActionListener() {
 
-                public void actionPerformed(ActionEvent a) {
-                    cl.next(cards);
+            public void actionPerformed(ActionEvent a) {
+                cl.next(cards);
 
-                    int geldOpnemen = 100;
-                    c.setCredit(geldOpnemen);
-                    int x = c.getCredit();
+                int geldOpnemen = 100;
+                c.setCredit(geldOpnemen);
+                int x = c.getCredit();
 //                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
-                    acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
-                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
+                acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
+                acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
 
-                    System.out.println(geldOpnemen);
-                }
-            });
-            saldocheck.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent a) {
-                    cl.next(cards);
-                    cl.next(cards);
-                    cl.next(cards);
-                    cl.next(cards);
-                }
-            });
-            automaat.addComponentListener(new ComponentListener() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                }
+                System.out.println(geldOpnemen);
+            }
+        });
+        saldocheck.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent a) {
+                cl.next(cards);
+                cl.next(cards);
+                cl.next(cards);
+                cl.next(cards);
+            }
+        });
+        
+        automaat.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+            }
 
-                @Override
-                public void componentMoved(ComponentEvent e) {
-                }
+            @Override
+            public void componentMoved(ComponentEvent e) {
+            }
 
-                @Override
-                public void componentShown(ComponentEvent e) {
-                    try {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                try {
 //                        System.out.println(geldOpnemen);
 //                        int credit = Credit(acc, geldOpnemen);
 //                        acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
 
-                        Thread.sleep(3000);
-                        cl.first(cards);
+                    Thread.sleep(3000);
+                    cl.next(cards);
 
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    } finally {
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                } finally {
 //                cl.next(cards);// om naar eerste scherm tegaan eventueel nog extra line toevoegen
 //                cl.next(cards);
-                        // close connection 
-                    }
-                }
-
-                @Override
-                public void componentHidden(ComponentEvent e) {
-
-                }
-
-            });
-            saldooo.addComponentListener(new ComponentListener() {
-                @Override
-                public void componentResized(ComponentEvent e) {
-                }
-
-                @Override
-                public void componentMoved(ComponentEvent e) {
-                }
-
-                @Override
-                public void componentShown(ComponentEvent e) {
-                    try {
-                        Thread.sleep(3000);
-//                        saldoDatabase = acc.getCredit();
-//                        ownerId = acc.getOwnerId();
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    } finally {
-                        cl.next(cards);// om naar eerste scherm tegaan eventueel nog extra line toevoegen
-                        cl.next(cards);
-                        // close connection 
-                    }
-                }
-
-                @Override
-                public void componentHidden(ComponentEvent e) {
-
-                }
-
-            });
-            JFrame frame = new JFrame("Bank");
-
-            class ControlActionListener implements ActionListener {
-
-                public void actionPerformed(ActionEvent e) {
-
-                    String cmd = e.getActionCommand();
-
-                    if (cmd.equals(Exit)) {
-                        cl.first(cards);
-                    } else if (cmd.equals(SnelMenu)) {
-                        cl.next(cards);
-                        cl.next(cards);
-
-                    }
+                    // close connection 
                 }
             }
-            ControlActionListener cal = new ControlActionListener();
 
-            JButton btn1 = new JButton("Exit");
-            btn1.setActionCommand(Exit);
-            btn1.addActionListener(cal);
+            @Override
+            public void componentHidden(ComponentEvent e) {
 
-            JButton btn3 = new JButton("SnelMenu");
-            btn3.setActionCommand(SnelMenu);
-            btn3.addActionListener(cal);
+            }
 
-            JPanel controlButtons = new JPanel();
-            controlButtons.add(btn1);
-            controlButtons.add(btn3);
+        });
+        saldooo.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+            }
 
-            Container pane = frame.getContentPane();
-            pane.add(cards, BorderLayout.CENTER);
-            pane.add(controlButtons, BorderLayout.PAGE_END);
+            @Override
+            public void componentMoved(ComponentEvent e) {
+            }
 
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(300, 200);
-            frame.setVisible(true);
+            @Override
+            public void componentShown(ComponentEvent e) {
+                try {
+                    Thread.sleep(3000);
+//                        saldoDatabase = acc.getCredit();
+//                        ownerId = acc.getOwnerId();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                } finally {
+                    cl.next(cards);// om naar eerste scherm tegaan eventueel nog extra line toevoegen
+                    cl.next(cards);
+                    // close connection 
+                }
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+
+            }
+
+        });
+        ja.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent a) {
+                int geldOpnemen = c.getCredit();
+                Printen print = new Printen(geldOpnemen);
+                cl.first(cards);
+                
+            }
+        });
+        nee.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent a) {
+                cl.first(cards);
+                
+            }
+        });
+        JFrame frame = new JFrame("Bank");
+
+        class ControlActionListener implements ActionListener {
+
+            public void actionPerformed(ActionEvent e) {
+
+                String cmd = e.getActionCommand();
+
+                if (cmd.equals(Exit)) {
+                    cl.first(cards);
+                } else if (cmd.equals(SnelMenu)) {
+                    cl.next(cards);
+                    cl.next(cards);
+
+                }
+            }
         }
-    }
+        ControlActionListener cal = new ControlActionListener();
 
-//    public static int newCredit(AccountsConnection a, int b) {
-//        int x = a.getCredit();
-//        int y = x - b; //nieuw credit na opnemen
-//        return y;
-//    }
-//    
-    public String getArduino(){
+        JButton btn1 = new JButton("Exit");
+        btn1.setActionCommand(Exit);
+        btn1.addActionListener(cal);
+
+        JButton btn3 = new JButton("SnelMenu");
+        btn3.setActionCommand(SnelMenu);
+        btn3.addActionListener(cal);
+
+        JPanel controlButtons = new JPanel();
+        controlButtons.add(btn1);
+        controlButtons.add(btn3);
+
+        Container pane = frame.getContentPane();
+        pane.add(cards, BorderLayout.CENTER);
+        pane.add(controlButtons, BorderLayout.PAGE_END);
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(500, 300);
+        frame.setVisible(true);
+    }
+    //    public static int newCredit(AccountsConnection a, int b) {
+    //        int x = a.getCredit();
+    //        int y = x - b; //nieuw credit na opnemen
+    //        return y;
+    //    }
+    //    
+
+    public static String getArduino() {
         return serial;
     }
-    public static void setArduino(String x){
-        serial = x; 
-        System.out.print("JOEJKEO"+serial);
+
+    public static void setArduino(String x) {
+        serial = x;
+        System.out.print(serial);
+    }
+    public static int getOpnemen(){
+        return opnemen;
+    }
+    public static void setId(int x){
+        opnemen = x;
+        
     }
 }
