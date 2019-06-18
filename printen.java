@@ -17,6 +17,6 @@ public class Printen {
         DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE;
         String formattedDate = formatter.format(LocalDate.now());
         System.out.println("Datum: " +formattedDate);
-        System.out.println("Geldopgenomen = "+x);
+        System.out.println("Nieuw saldo = "+x);
     }
 }

@@ -21,6 +21,5 @@ public class Credit {
     }
     public void setCredit(int x){
       geldOpnemen = con.getCredit()-x;
-      System.out.println("   "+geldOpnemen);
     }
 }
