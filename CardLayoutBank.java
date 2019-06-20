@@ -22,10 +22,12 @@ public class CardLayoutBank {
         int credit;
         int saldoDatabase;
         int geldOpnemen;
+        Integer check;
 
         String SaldoPersoon;
         String user = "1";
         String ownerId;
+        char y[] = new char[4];
         int x;
         boolean rfid = false;
         /* hier functie maken/aanroepen dat het alleen mag doorgaan als de pas active op 1 is*/
@@ -96,9 +98,9 @@ public class CardLayoutBank {
         JButton saldocheck = new JButton("(B) Saldo Check");
 
 //        JButton saldoo = new JButton("Dus te weinig saldo");
-        JButton opn = new JButton("(A) £20");
-        JButton opne = new JButton("(B) £50");
-        JButton opnee = new JButton("(C) £100");
+        JButton opn = new JButton("(A) £500");
+        JButton opne = new JButton("(B) £1000");
+        JButton opnee = new JButton("(C) £2000");
 
         JButton bonnetje = new JButton("Wilt u een bonnetje?");
         JButton ja = new JButton("(A) Ja");
@@ -107,8 +109,8 @@ public class CardLayoutBank {
         JButton bo = new JButton("Bon printen");
 
         JButton geblokt = new JButton("Uw pas is geblokt");
-        /*!!!!!!!!!!!!!!!!PANELS!!!!!!!!!!!!!*/
 
+        /*!!!!!!!!!!!!!!!!PANELS!!!!!!!!!!!!!*/
         JPanel card1 = new JPanel();
         JPanel infoo = new JPanel();
         JPanel opnemen = new JPanel();
@@ -169,6 +171,16 @@ public class CardLayoutBank {
         }
         ControlActionListener cal = new ControlActionListener();
 
+        JButton saldoP = new JButton("Uw saldo bij ons = " + saldoDatabase);
+        JButton opge = new JButton("U kunt uw geld uit de automaat nemen!");
+
+        automaat.add(opge);
+
+        bonPrinten.add(bonnetje);
+        bonPrinten.add(ja);
+        bonPrinten.add(nee);
+
+        saldooo.add(saldoP);
         JButton btn1 = new JButton("Exit");
         btn1.setActionCommand(Exit);
         btn1.addActionListener(cal);
@@ -197,7 +209,10 @@ public class CardLayoutBank {
 
         if (serial.length() > 4) {
             serial.trim();
-            acc.getCardNumber("SELECT accountid FROM cards WHERE rfidid =" + serial);
+            if (acc.getCardNumber("SELECT accountid FROM cards WHERE rfidid =" + serial) == -1) {
+                return;
+            }
+
             acc.queryDatabase("SELECT * FROM accounts WHERE accountid =" + user);
             saldoDatabase = acc.getCredit();
             ownerId = acc.getOwnerId();
@@ -206,19 +221,26 @@ public class CardLayoutBank {
             acc.getActive();
             serial = "";
         }
-        JButton saldoP = new JButton("Uw saldo bij ons = " + saldoDatabase);
-        JButton opge = new JButton("U kunt uw geld uit de automaat nemen!");
 
-        automaat.add(opge);
-
-        bonPrinten.add(bonnetje);
-        bonPrinten.add(ja);
-        bonPrinten.add(nee);
-
-        saldooo.add(saldoP);
         if ((serial.trim() == "AA" || serial.trim() == "A") && rfid == true) {
+            char[] d = new char[4];
+
+            for (int i = 0; i < 4; i++) { // fill array of input
+                if (d[i] == ' ') {
+                    i = -1;
+                }
+                y[i] = d[i];
+            }
+            check = Integer.parseInt(new String(d)); // parse char array to an int number
             cl.next(cards);
             serial = "";
+            int pin = acc.getPin();
+            if (check == pin) { //check if pin isn't correct 
+                cl.next(cards);
+            } else {
+                
+                return;
+            }
         }
 //            a.addActionListener(new ActionListener() {
 //
@@ -254,7 +276,7 @@ public class CardLayoutBank {
         if (serial.trim() == "A" || serial.trim() == "AA") {
             cl.next(cards);
 
-            geldOpnemen = 20;
+            geldOpnemen = 500;
             c.setCredit(geldOpnemen);
             x = c.getCredit();
 //                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
@@ -264,7 +286,7 @@ public class CardLayoutBank {
             serial = "";
         } else if (serial.trim() == "B" || serial.trim() == "BB") {
             cl.next(cards);
-            geldOpnemen = 50;
+            geldOpnemen = 1000;
             c.setCredit(geldOpnemen);
             x = c.getCredit();
 //                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
@@ -275,7 +297,7 @@ public class CardLayoutBank {
         } else if (serial.trim() == "C" || serial.trim() == "CC") {
             cl.next(cards);
 
-            geldOpnemen = 100;
+            geldOpnemen = 2000;
             c.setCredit(geldOpnemen);
             x = c.getCredit();
 //                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
@@ -283,19 +305,20 @@ public class CardLayoutBank {
             acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
 
             System.out.println(geldOpnemen);
-        } else if (serial.trim() == "D" || serial.trim() == "DD") {
-            cl.next(cards);
-
-            geldOpnemen = 100;
-            c.setCredit(geldOpnemen);
-            x = c.getCredit();
-//                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
-            acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
-            acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
-
-            System.out.println(geldOpnemen);
-
         }
+//        } else if (serial.trim() == "D" || serial.trim() == "DD") {
+//            cl.next(cards);
+//
+//            geldOpnemen = 2000;
+//            c.setCredit(geldOpnemen);
+//            x = c.getCredit();
+////                    acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
+//            acc.updateTable("UPDATE accounts SET credit =" + x + ", active = 1 WHERE accountid =" + user + ";");
+//            acc.updateTable("INSERT INTO transactions (home, foreignacct, amt) VALUES(1, 0," + geldOpnemen + ");");
+//
+//            System.out.println(geldOpnemen);
+//
+//        }
 
 //        opn.addActionListener( new ActionListener() {
 //            public void actionPerformed(ActionEvent a) {
